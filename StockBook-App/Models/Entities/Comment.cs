@@ -2,12 +2,11 @@
 {
     public class Comment
     {
-        public Guid Id { get; set; }
-
+        public Guid Id { get; set; } 
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
 
-
+        public DateTime Date { get; set; } = DateTime.Now;
         public Guid? StockId { get; set; }
 
         // Navigation property to the related Stock entity
