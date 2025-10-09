@@ -4,6 +4,7 @@ using StockBook_App.Data;
 using StockBook_App.Dtos.Stock;
 using StockBook_App.Mappers;
 using StockBook_App.Models.Entities;
+using System.Data.Entity;
 
 namespace StockBook_App.Controllers
 {
@@ -19,18 +20,18 @@ namespace StockBook_App.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllStocks()
+        public async Task<IActionResult> GetAllStocks()
         {
-            List<StockDto> stocks = _dbContext.Stocks.Select(s => s.ToStockDto()).ToList();
+            List<Stock> stocks = await _dbContext.Stocks.AsNoTracking().ToListAsync();
 
-            return Ok(stocks);
+            return Ok(stocks.Select(s => s.ToStockDto()));
         }
 
         [HttpGet]
         [Route("{id:guid}")]
-        public IActionResult GetStockById([FromRoute] Guid id)
+        public async Task<IActionResult> GetStockById([FromRoute] Guid id)
         {
-            Stock? stock = _dbContext.Stocks.Find(id);
+            Stock? stock = await _dbContext.Stocks.FindAsync(id);
 
             if (stock == null)
             {
@@ -38,26 +39,25 @@ namespace StockBook_App.Controllers
             }
             
                 
-            return Ok(stock.ToStockDto());
-            
+            return Ok(stock.ToStockDto())
         }
 
         [HttpPost]
-        public IActionResult AddStock([FromBody] AddStockDto stockDto)
+        public async Task<IActionResult> AddStock([FromBody] AddStockDto addStockDto)
         {
-            Stock stock = stockDto.ToStockFromAddStockDto();
+            Stock stock = addStockDto.ToStockFromAddStockDto();
 
-            _dbContext.Stocks.Add(stock);
-            _dbContext.SaveChanges();
+            await _dbContext.Stocks.AddAsync(stock);
+            await _dbContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetStockById), new { id = stock.Id }, stock.ToStockDto());
         }
 
         [HttpPut]
         [Route("{id:guid}")]
-        public IActionResult UpdateAStock([FromRoute] Guid id, [FromBody] UpdateStockDto updteStockDto)
+        public async Task<IActionResult> UpdateAStock([FromRoute] Guid id, [FromBody] UpdateStockDto updteStockDto)
         {
-            var existingStock = _dbContext.Stocks.Find(id);
+            var existingStock = await _dbContext.Stocks.FindAsync(id);
 
             if (existingStock == null)
             {
@@ -71,16 +71,16 @@ namespace StockBook_App.Controllers
             existingStock.Industry = updteStockDto.Industry;
             existingStock.MarketCap = updteStockDto.MarketCap;
 
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return Ok(existingStock.ToStockDto());
         }
 
         [HttpPatch]
         [Route("{id:guid}")]
-        public IActionResult PartiallyUpdateAStock([FromRoute] Guid id, [FromBody] PatiallyUpdateStockDto patiallyUpdateStockDto)
+        public async Task<IActionResult> PartiallyUpdateAStock([FromRoute] Guid id, [FromBody] PatiallyUpdateStockDto patiallyUpdateStockDto)
         {
-            var existingStock = _dbContext.Stocks.Find(id);
+            var existingStock = await _dbContext.Stocks.FindAsync(id);
 
             if (existingStock == null)
             {
@@ -111,7 +111,7 @@ namespace StockBook_App.Controllers
             {
                 existingStock.MarketCap = (long)patiallyUpdateStockDto.MarketCap;
             }
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
 
             return Ok(existingStock.ToStockDto());
         }
@@ -119,9 +119,9 @@ namespace StockBook_App.Controllers
         [HttpDelete]
         [Route("{id:guid}")]
 
-        public IActionResult DeleteAStock([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteAStock([FromRoute] Guid id)
         {
-            var existingStock = _dbContext.Stocks.Find(id);
+            Stock? existingStock = await _dbContext.Stocks.FindAsync(id);
             
             if (existingStock == null)
             {
@@ -129,7 +129,7 @@ namespace StockBook_App.Controllers
             }
 
             _dbContext.Stocks.Remove(existingStock);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return NoContent();
         }
 
