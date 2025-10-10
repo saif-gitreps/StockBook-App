@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using StockBook_App.Data;
 using StockBook_App.Dtos.Stock;
+using StockBook_App.Interfaces;
 using StockBook_App.Mappers;
 using StockBook_App.Models.Entities;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace StockBook_App.Controllers
 {
@@ -13,16 +14,18 @@ namespace StockBook_App.Controllers
     public class StockController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        public StockController(ApplicationDbContext dbContext)
+        private readonly IStockRepository _stockRepo;
+        public StockController(ApplicationDbContext dbContext, IStockRepository stockRepo)
         {
             _dbContext = dbContext;
+            _stockRepo = stockRepo;
 
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllStocks()
         {
-            List<Stock> stocks = await _dbContext.Stocks.AsNoTracking().ToListAsync();
+            var stocks = await _stockRepo.GetALLStockAsync();
 
             return Ok(stocks.Select(s => s.ToStockDto()));
         }
@@ -31,24 +34,21 @@ namespace StockBook_App.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> GetStockById([FromRoute] Guid id)
         {
-            Stock? stock = await _dbContext.Stocks.FindAsync(id);
+            Stock? stock = await _stockRepo.GetStockByIdAsync(id);
 
             if (stock == null)
             {
                 return NotFound("No such stock available");
             }
-            
-                
-            return Ok(stock.ToStockDto())
+
+
+            return Ok(stock.ToStockDto());
         }
 
         [HttpPost]
         public async Task<IActionResult> AddStock([FromBody] AddStockDto addStockDto)
         {
-            Stock stock = addStockDto.ToStockFromAddStockDto();
-
-            await _dbContext.Stocks.AddAsync(stock);
-            await _dbContext.SaveChangesAsync();
+            Stock stock = await _stockRepo.AddStockAsync(addStockDto.ToStockFromAddStockDto());
 
             return CreatedAtAction(nameof(GetStockById), new { id = stock.Id }, stock.ToStockDto());
         }
@@ -57,21 +57,12 @@ namespace StockBook_App.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateAStock([FromRoute] Guid id, [FromBody] UpdateStockDto updteStockDto)
         {
-            var existingStock = await _dbContext.Stocks.FindAsync(id);
+            var existingStock = await _stockRepo.UpdateStockAsync(id, updteStockDto);
 
             if (existingStock == null)
             {
-                return NotFound("No such stock");
-            } 
-
-            existingStock.Symbol = updteStockDto.Symbol;
-            existingStock.CompanyName = updteStockDto.CompanyName;
-            existingStock.Purchase = updteStockDto.Purchase;
-            existingStock.LastDiv = updteStockDto.LastDiv;
-            existingStock.Industry = updteStockDto.Industry;
-            existingStock.MarketCap = updteStockDto.MarketCap;
-
-            await _dbContext.SaveChangesAsync();
+                return NotFound();
+            }
 
             return Ok(existingStock.ToStockDto());
         }
@@ -80,38 +71,13 @@ namespace StockBook_App.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> PartiallyUpdateAStock([FromRoute] Guid id, [FromBody] PatiallyUpdateStockDto patiallyUpdateStockDto)
         {
-            var existingStock = await _dbContext.Stocks.FindAsync(id);
+            var existingStock = await _stockRepo.
+                PartiallyUpdateStockAsync(id, patiallyUpdateStockDto);
 
             if (existingStock == null)
             {
                 return NotFound("No such stock");
             }
-
-            if (patiallyUpdateStockDto.Symbol != null)
-            {
-                existingStock.Symbol = patiallyUpdateStockDto.Symbol;
-            }
-            if (patiallyUpdateStockDto.CompanyName != null)
-            {
-                existingStock.CompanyName = patiallyUpdateStockDto.CompanyName;
-            }
-            if (patiallyUpdateStockDto.Purchase != null)
-            {
-                existingStock.Purchase = (decimal)patiallyUpdateStockDto.Purchase;
-            }
-            if (patiallyUpdateStockDto.LastDiv != null)
-            {
-                existingStock.LastDiv = (decimal)patiallyUpdateStockDto.LastDiv;
-            }
-            if (patiallyUpdateStockDto.Industry != null)
-            {
-                existingStock.Industry = patiallyUpdateStockDto.Industry;
-            }
-            if (patiallyUpdateStockDto.MarketCap != null)
-            {
-                existingStock.MarketCap = (long)patiallyUpdateStockDto.MarketCap;
-            }
-            await _dbContext.SaveChangesAsync();
 
             return Ok(existingStock.ToStockDto());
         }
@@ -121,15 +87,7 @@ namespace StockBook_App.Controllers
 
         public async Task<IActionResult> DeleteAStock([FromRoute] Guid id)
         {
-            Stock? existingStock = await _dbContext.Stocks.FindAsync(id);
-            
-            if (existingStock == null)
-            {
-                return NotFound("No such stock");
-            }
-
-            _dbContext.Stocks.Remove(existingStock);
-            await _dbContext.SaveChangesAsync();
+            await _stockRepo.DeleteStockAsync(id);
             return NoContent();
         }
 

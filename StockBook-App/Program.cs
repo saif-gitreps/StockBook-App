@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StockBook_App.Data;
+using StockBook_App.Interfaces;
+using StockBook_App.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.AddScoped<IStockRepository, StockRepository>();
 
 
 var app = builder.Build();
