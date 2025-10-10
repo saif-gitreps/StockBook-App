@@ -21,14 +21,16 @@ namespace StockBook_App.Repository
             return stock;
         }
 
-        public async Task DeleteStockAsync(Guid id)
+        public async Task<Stock?> DeleteStockAsync(Guid id)
         {
             Stock? existingStock = await _dbContext.Stocks.FirstOrDefaultAsync(s => s.Id == id);
-            if (existingStock != null)
-            { 
-                _dbContext.Stocks.Remove(existingStock);
-                await _dbContext.SaveChangesAsync();
+            if (existingStock == null)
+            {
+                return null;
             }
+            _dbContext.Stocks.Remove(existingStock);
+            await _dbContext.SaveChangesAsync();
+            return existingStock;
         }
 
         public async Task<List<Stock>> GetALLStockAsync()
@@ -58,29 +60,34 @@ namespace StockBook_App.Repository
             return existingStock;
         }
 
-        public async Task<Stock?> PartiallyUpdateStockAsync(Guid id, UpdateStockDto updateStockDto)
+        public async Task<Stock?> PartiallyUpdateStockAsync(Guid id, PatiallyUpdateStockDto updateStockDto)
         {
             Stock? existingStock = await _dbContext.Stocks.FirstOrDefaultAsync(s => s.Id == id);
             if (existingStock == null)
             {
                 return null;
             }
+
             if (!string.IsNullOrWhiteSpace(updateStockDto.Symbol))
             {
                 existingStock.Symbol = updateStockDto.Symbol;
             }
+
             if (!string.IsNullOrWhiteSpace(updateStockDto.CompanyName))
             {
                 existingStock.CompanyName = updateStockDto.CompanyName;
             }
-            if (updateStockDto.Purchase != 0)
+
+            if (updateStockDto.Purchase is not null)
             {
-                existingStock.Purchase = updateStockDto.Purchase;
+                existingStock.Purchase = (decimal)updateStockDto.Purchase;
             }
-            if (updateStockDto.LastDiv != 0)
+
+            if (updateStockDto.LastDiv is not null)
             {
-                existingStock.LastDiv = updateStockDto.LastDiv;
+                existingStock.LastDiv = (decimal)updateStockDto.LastDiv;
             }
+
             if (!string.IsNullOrWhiteSpace(updateStockDto.Industry))
             {
                 existingStock.Industry = updateStockDto.Industry;

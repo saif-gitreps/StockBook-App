@@ -87,7 +87,11 @@ namespace StockBook_App.Controllers
 
         public async Task<IActionResult> DeleteAStock([FromRoute] Guid id)
         {
-            await _stockRepo.DeleteStockAsync(id);
+            Stock? stock = await _stockRepo.DeleteStockAsync(id);
+            if (stock == null)
+            {
+                return NotFound("No such stock");
+            }
             return NoContent();
         }
 

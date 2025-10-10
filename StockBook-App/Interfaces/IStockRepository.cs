@@ -11,7 +11,7 @@ namespace StockBook_App.Interfaces
         Task<Stock?> UpdateStockAsync(Guid id, UpdateStockDto updateStockDto);
 
         Task<Stock?> PartiallyUpdateStockAsync(Guid id, PatiallyUpdateStockDto patiallyUpdateStockDto);
-        Task DeleteStockAsync(Guid id);
+        Task<Stock?> DeleteStockAsync(Guid id);
 
     }
 }
