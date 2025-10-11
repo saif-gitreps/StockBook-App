@@ -5,5 +5,6 @@ namespace StockBook_App.Interfaces
     public interface ICommentRepository
     {
         Task<List<Comment>> GetAllCommentsAsync();
+        Task<Comment?> GetCommentByIdAsync(Guid id);
     }
 }

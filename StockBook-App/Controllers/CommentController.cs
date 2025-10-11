@@ -24,5 +24,18 @@ namespace StockBook_App.Controllers
 
             return Ok(comments.Select(c => c.ToCommentDto()));
         }
+
+        [HttpGet]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> GetCommentByIdAsync([FromRoute] Guid id)
+        {
+            Comment? comment = await _commentRepo.GetCommentByIdAsync(id);
+            if (comment == null)
+            {
+                return NotFound("No such comment available");
+            }
+
+            return Ok(comment.ToCommentDto());
+        }
     }
 }

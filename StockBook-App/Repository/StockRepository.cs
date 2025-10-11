@@ -35,12 +35,12 @@ namespace StockBook_App.Repository
 
         public async Task<List<Stock>> GetALLStockAsync()
         {
-            return await _dbContext.Stocks.ToListAsync();
+            return await _dbContext.Stocks.Include(s => s.Comments).ToListAsync();
         }
 
         public async Task<Stock?> GetStockByIdAsync(Guid id)
         {
-           return await _dbContext.Stocks.FirstOrDefaultAsync(s => s.Id == id);
+           return await _dbContext.Stocks.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == id);
         }
 
         public async Task<Stock?> UpdateStockAsync(Guid id, UpdateStockDto updateStockDto)

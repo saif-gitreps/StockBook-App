@@ -1,4 +1,5 @@
-﻿using StockBook_App.Models.Entities;
+﻿using StockBook_App.Dtos.Comment;
+using StockBook_App.Models.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockBook_App.Dtos.Stock
@@ -16,5 +17,7 @@ namespace StockBook_App.Dtos.Stock
         public required decimal LastDiv { get; set; }
         public required string Industry { get; set; }
         public required long MarketCap { get; set; }
+
+        public required List<CommentDto> Comments { get; set; }
     }
 }

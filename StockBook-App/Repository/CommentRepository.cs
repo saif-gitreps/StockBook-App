@@ -16,5 +16,17 @@ namespace StockBook_App.Repository
         {
             return await _dbContext.Comments.ToListAsync();
         }
+
+        public async Task<Comment?> GetCommentByIdAsync(Guid id)
+        {
+            Comment? existingComment = await _dbContext.Comments.FirstOrDefaultAsync(c => c.Id == id);
+
+            if (existingComment == null)
+            {
+                return null;
+            }
+
+            return existingComment;
+        }
     }
 }
