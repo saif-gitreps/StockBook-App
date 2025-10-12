@@ -37,5 +37,12 @@ namespace StockBook_App.Controllers
 
             return Ok(comment.ToCommentDto());
         }
+
+        [HttpPost]
+        [Route("{stockId:guid}")]
+        public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid stockId, [FromBody] CreateCommentDto createCommentDto)
+        {
+
+        }
     }
 }
