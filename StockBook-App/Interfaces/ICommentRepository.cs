@@ -6,5 +6,6 @@ namespace StockBook_App.Interfaces
     {
         Task<List<Comment>> GetAllCommentsAsync();
         Task<Comment?> GetCommentByIdAsync(Guid id);
+        Task<Comment> CreateCommentAsync(Comment comment);
     }
 }

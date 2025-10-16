@@ -12,17 +12,20 @@ namespace StockBook_App.Controllers
     public class CommentController : ControllerBase
     {
         private readonly ICommentRepository _commentRepo;
-        public CommentController(ICommentRepository commentRepo)
+        private readonly IStockRepository _stockRepo;
+        public CommentController(ICommentRepository commentRepo, IStockRepository stockRepo)
         {
             _commentRepo = commentRepo;
+            _stockRepo = stockRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllCommentsAsync()
         {
             List<Comment> comments = await _commentRepo.GetAllCommentsAsync();
+            //List<CommentDto> commentDtos = [.. comments.Select(c => c.ToCommentDto())];
 
-            return Ok(comments.Select(c => c.ToCommentDto()));
+            return Ok(comments);
         }
 
         [HttpGet]
@@ -39,10 +42,17 @@ namespace StockBook_App.Controllers
         }
 
         [HttpPost]
-        [Route("{stockId:guid}")]
-        public async Task<IActionResult> CreateCommentAsync([FromRoute] Guid stockId, [FromBody] CreateCommentDto createCommentDto)
+        public async Task<IActionResult> CreateCommentAsync([FromBody] CreateCommentDto createCommentDto)
         {
+            if (await _stockRepo.StockExists(createCommentDto.StockId) == false)
+            {
+                return BadRequest("No such stock available to add comment");    
+            }
 
+            Comment comment = createCommentDto.ToCommentFromCreateDto(createCommentDto.StockId);
+            await _commentRepo.CreateCommentAsync(comment);
+
+            return Ok(comment.ToCommentDto());
         }
     }
 }

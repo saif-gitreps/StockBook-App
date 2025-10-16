@@ -95,5 +95,10 @@ namespace StockBook_App.Repository
             await _dbContext.SaveChangesAsync();
             return existingStock;
         }
+
+        public async Task<bool> StockExists(Guid id)
+        {
+            return await _dbContext.Stocks.AnyAsync(s => s.Id == id);
+        }
     }
 }
