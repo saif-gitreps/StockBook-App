@@ -47,6 +47,12 @@ namespace StockBook_App.Repository
                 stocks = stocks.Where(s => s.CompanyName.Contains(stockQueryDto.CompanyName));
             }
 
+            if (!string.IsNullOrWhiteSpace(stockQueryDto.SortBy) && stockQueryDto.SortBy.Equals("Symbol"))
+            {
+                stocks = !string.IsNullOrWhiteSpace(stockQueryDto.SortOrder) && 
+                    stockQueryDto.SortOrder.Equals("asc") ? stocks.OrderBy(s => s.Symbol) : stocks.OrderByDescending(s => s.Symbol);
+            }
+
             return await stocks.ToListAsync();
         }
 
