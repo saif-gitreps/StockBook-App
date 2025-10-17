@@ -46,7 +46,7 @@ namespace StockBook_App.Controllers
         {
             if (await _stockRepo.StockExists(createCommentDto.StockId) == false)
             {
-                return BadRequest("No such stock available to add comment");    
+                return BadRequest("No such stock available to add comment");
             }
 
             Comment comment = createCommentDto.ToCommentFromCreateDto(createCommentDto.StockId);
@@ -66,6 +66,20 @@ namespace StockBook_App.Controllers
             }
 
             return Ok(updatedComment.ToCommentDto());
+        }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid id)
+        {
+            bool isDeleted = await _commentRepo.DeleteCommentAsync(id);
+
+            if (isDeleted == false)
+            {
+                return NotFound("No such comment available to delete");
+            }
+
+            return Ok(isDeleted);
         }
     }
 }

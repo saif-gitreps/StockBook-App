@@ -21,6 +21,20 @@ namespace StockBook_App.Repository
             return comment;
         }
 
+        public async Task<bool> DeleteCommentAsync(Guid id)
+        {
+            Comment? comment = await _dbContext.Comments.FindAsync(id);
+            if (comment == null)
+            {
+                return false;
+            }
+
+            _dbContext.Comments.Remove(comment);
+            await _dbContext.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<List<Comment>> GetAllCommentsAsync()
         {
             return await _dbContext.Comments.ToListAsync();

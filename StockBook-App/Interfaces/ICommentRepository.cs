@@ -8,5 +8,6 @@ namespace StockBook_App.Interfaces
         Task<Comment?> GetCommentByIdAsync(Guid id);
         Task<Comment> CreateCommentAsync(Comment comment);
         Task<Comment?> UpdateCommentAsync(Guid id, Comment comment);
+        Task<bool> DeleteCommentAsync(Guid id);
     }
 }
