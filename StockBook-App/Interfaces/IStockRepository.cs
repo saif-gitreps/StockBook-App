@@ -5,7 +5,7 @@ namespace StockBook_App.Interfaces
 {
     public interface IStockRepository
     {
-        Task<List<Stock>> GetALLStockAsync();
+        Task<List<Stock>> GetALLStockAsync(StockQueryDto stockQueryDto);
         Task<Stock?> GetStockByIdAsync(Guid id);
         Task<Stock> AddStockAsync(Stock stock);
         Task<Stock?> UpdateStockAsync(Guid id, UpdateStockDto updateStockDto);

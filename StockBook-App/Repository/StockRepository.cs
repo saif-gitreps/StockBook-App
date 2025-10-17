@@ -33,9 +33,21 @@ namespace StockBook_App.Repository
             return existingStock;
         }
 
-        public async Task<List<Stock>> GetALLStockAsync()
+        public async Task<List<Stock>> GetALLStockAsync(StockQueryDto stockQueryDto)
         {
-            return await _dbContext.Stocks.Include(s => s.Comments).ToListAsync();
+            IQueryable<Stock> stocks = _dbContext.Stocks.Include(s => s.Comments).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(stockQueryDto.Symbol))
+            {
+                stocks = stocks.Where(s => s.Symbol.Contains(stockQueryDto.Symbol));
+            }
+
+            if (!string.IsNullOrWhiteSpace(stockQueryDto.CompanyName))
+            {
+                stocks = stocks.Where(s => s.CompanyName.Contains(stockQueryDto.CompanyName));
+            }
+
+            return await stocks.ToListAsync();
         }
 
         public async Task<Stock?> GetStockByIdAsync(Guid id)

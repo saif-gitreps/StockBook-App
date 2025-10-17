@@ -23,9 +23,14 @@ namespace StockBook_App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllStocks()
+        public async Task<IActionResult> GetAllStocks([FromQuery] StockQueryDto query)
         {
-            var stocks = await _stockRepo.GetALLStockAsync();
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
+            List<Stock> stocks = await _stockRepo.GetALLStockAsync(query);
 
             return Ok(stocks.Select(s => s.ToStockDto()));
         }
@@ -34,6 +39,11 @@ namespace StockBook_App.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> GetStockById([FromRoute] Guid id)
         {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
             Stock? stock = await _stockRepo.GetStockByIdAsync(id);
 
             if (stock == null)
@@ -48,6 +58,11 @@ namespace StockBook_App.Controllers
         [HttpPost]
         public async Task<IActionResult> AddStock([FromBody] AddStockDto addStockDto)
         {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
             Stock stock = await _stockRepo.AddStockAsync(addStockDto.ToStockFromAddStockDto());
 
             return CreatedAtAction(nameof(GetStockById), new { id = stock.Id }, stock.ToStockDto());
@@ -57,6 +72,11 @@ namespace StockBook_App.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> UpdateAStock([FromRoute] Guid id, [FromBody] UpdateStockDto updteStockDto)
         {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
             var existingStock = await _stockRepo.UpdateStockAsync(id, updteStockDto);
 
             if (existingStock == null)
@@ -71,6 +91,11 @@ namespace StockBook_App.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> PartiallyUpdateAStock([FromRoute] Guid id, [FromBody] PatiallyUpdateStockDto patiallyUpdateStockDto)
         {
+            if (ModelState.IsValid == false)
+            {
+                // this ModelState contains all the errors and it is from the ControllerBase class
+                return BadRequest(ModelState);
+            }
             var existingStock = await _stockRepo.
                 PartiallyUpdateStockAsync(id, patiallyUpdateStockDto);
 
@@ -87,6 +112,11 @@ namespace StockBook_App.Controllers
 
         public async Task<IActionResult> DeleteAStock([FromRoute] Guid id)
         {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
             Stock? stock = await _stockRepo.DeleteStockAsync(id);
             if (stock == null)
             {
