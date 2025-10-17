@@ -29,5 +29,15 @@ namespace StockBook_App.Mappers
             };
 
         }
+
+        public static Comment ToCommentFromUpdateCommentRequestDto(this UpdateCommentRequestDto updateCommentRequestDto)
+        {
+            return new Comment
+            {
+                Title = updateCommentRequestDto.Title,
+                Content = updateCommentRequestDto.Content,
+            };
+
+        }
     }
 }

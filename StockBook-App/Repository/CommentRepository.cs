@@ -37,5 +37,19 @@ namespace StockBook_App.Repository
 
             return existingComment;
         }
+
+        public async Task<Comment?> UpdateCommentAsync(Guid id, Comment comment)
+        {
+            Comment? existingComment = await _dbContext.Comments.FindAsync(id);
+            if (existingComment == null) {
+                return null;
+            }
+
+            existingComment.Title = comment.Title;
+            existingComment.Content = comment.Content;
+            await _dbContext.SaveChangesAsync();
+
+            return existingComment;
+        }
     }
 }

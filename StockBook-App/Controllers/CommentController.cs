@@ -54,5 +54,18 @@ namespace StockBook_App.Controllers
 
             return Ok(comment.ToCommentDto());
         }
+
+        [HttpPut]
+        [Route("{id:guid}")]
+        public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid id, [FromBody] UpdateCommentRequestDto updateCommentDto)
+        {
+            Comment? updatedComment = await _commentRepo.UpdateCommentAsync(id, updateCommentDto.ToCommentFromUpdateCommentRequestDto());
+            if (updatedComment == null)
+            {
+                return NotFound("No such comment available to update");
+            }
+
+            return Ok(updatedComment.ToCommentDto());
+        }
     }
 }
