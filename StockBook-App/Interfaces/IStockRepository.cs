@@ -9,10 +9,8 @@ namespace StockBook_App.Interfaces
         Task<Stock?> GetStockByIdAsync(Guid id);
         Task<Stock> AddStockAsync(Stock stock);
         Task<Stock?> UpdateStockAsync(Guid id, UpdateStockDto updateStockDto);
-
         Task<Stock?> PartiallyUpdateStockAsync(Guid id, PatiallyUpdateStockDto patiallyUpdateStockDto);
         Task<Stock?> DeleteStockAsync(Guid id);
-
         Task<bool> StockExists(Guid id);
 
     }
