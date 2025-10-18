@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockBook_App.Dtos.Account;
+using StockBook_App.Interfaces;
 using StockBook_App.Models.Entities;
 
 namespace StockBook_App.Controllers
@@ -11,9 +12,11 @@ namespace StockBook_App.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        public AccountController(UserManager<User> userManager)
+        private readonly ITokenService _tokenService;
+        public AccountController(UserManager<User> userManager, ITokenService tokenService)
         {
             _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost]
@@ -40,7 +43,12 @@ namespace StockBook_App.Controllers
                     IdentityResult? addRoleResult = await _userManager.AddToRoleAsync(user, "User");
                     if (addRoleResult.Succeeded)
                     {
-                        return Ok("User registered successfully");
+                        return Ok(new NewUserDto
+                        {
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Token = _tokenService.CreateToken(user)
+                        });
                     }
                     else
                     {

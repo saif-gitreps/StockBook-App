@@ -7,6 +7,7 @@ using StockBook_App.Data;
 using StockBook_App.Interfaces;
 using StockBook_App.Models.Entities;
 using StockBook_App.Repository;
+using StockBook_App.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,8 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 var app = builder.Build();
 
