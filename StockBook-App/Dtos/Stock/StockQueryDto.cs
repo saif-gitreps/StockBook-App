@@ -1,4 +1,6 @@
-﻿namespace StockBook_App.Dtos.Stock
+﻿using System.Diagnostics.Contracts;
+
+namespace StockBook_App.Dtos.Stock
 {
     public class StockQueryDto
     {
@@ -6,5 +8,8 @@
         public string? CompanyName { get; set; } = null;
         public string? SortBy { get; set; } = null;
         public string? SortOrder { get; set; } = null;
-     }
+        public int PageNumber { get; set; } = 1;
+
+        public int PageSize { get; set; } = 15;
+      }
 }

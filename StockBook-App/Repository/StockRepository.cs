@@ -53,7 +53,9 @@ namespace StockBook_App.Repository
                     stockQueryDto.SortOrder.Equals("asc") ? stocks.OrderBy(s => s.Symbol) : stocks.OrderByDescending(s => s.Symbol);
             }
 
-            return await stocks.ToListAsync();
+            int skip = (stockQueryDto.PageNumber - 1) * stockQueryDto.PageSize;
+
+            return await stocks.Skip(skip).Take(stockQueryDto.PageSize).ToListAsync();
         }
 
         public async Task<Stock?> GetStockByIdAsync(Guid id)
