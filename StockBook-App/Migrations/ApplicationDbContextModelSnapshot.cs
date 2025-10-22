@@ -196,6 +196,21 @@ namespace StockBook_App.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("StockBook_App.Models.Entities.Portfolio", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("UserId", "StockId");
+
+                    b.HasIndex("StockId");
+
+                    b.ToTable("Portfolios");
+                });
+
             modelBuilder.Entity("StockBook_App.Models.Entities.Stock", b =>
                 {
                     b.Property<Guid>("Id")
@@ -353,9 +368,35 @@ namespace StockBook_App.Migrations
                     b.Navigation("Stock");
                 });
 
+            modelBuilder.Entity("StockBook_App.Models.Entities.Portfolio", b =>
+                {
+                    b.HasOne("StockBook_App.Models.Entities.Stock", "Stock")
+                        .WithMany("Portfolios")
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("StockBook_App.Models.Entities.User", "User")
+                        .WithMany("Portfolios")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stock");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("StockBook_App.Models.Entities.Stock", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Portfolios");
+                });
+
+            modelBuilder.Entity("StockBook_App.Models.Entities.User", b =>
+                {
+                    b.Navigation("Portfolios");
                 });
 #pragma warning restore 612, 618
         }

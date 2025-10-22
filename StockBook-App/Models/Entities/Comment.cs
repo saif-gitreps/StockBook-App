@@ -1,5 +1,8 @@
-﻿namespace StockBook_App.Models.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace StockBook_App.Models.Entities
 {
+    [Table("Comments")]
     public class Comment
     {
         public Guid Id { get; set; } 

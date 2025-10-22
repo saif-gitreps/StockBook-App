@@ -15,9 +15,26 @@ namespace StockBook_App.Data
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<Comment> Comments { get; set; }
 
+        public DbSet<Portfolio> Portfolios { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // this is for creating the composite/compound key for Portfolio table
+            builder.Entity<Portfolio> (x => x.HasKey(p => new { p.UserId, p.StockId }));
+
+            // defining the relationships of Portfolio with User and Stock
+            builder.Entity<Portfolio>()
+                .HasOne(u => u.User)
+                .WithMany(u => u.Portfolios)
+                .HasForeignKey(p => p.UserId);
+
+            // defining the relationships of Portfolio with User and Stock
+            builder.Entity<Portfolio>()
+                .HasOne(u => u.Stock)
+                .WithMany(u => u.Portfolios)
+                .HasForeignKey(p => p.StockId);
 
             List<IdentityRole> roles = new List<IdentityRole>() {
                 new IdentityRole

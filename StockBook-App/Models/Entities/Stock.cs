@@ -2,6 +2,7 @@
 
 namespace StockBook_App.Models.Entities
 {
+    [Table("Stocks")]
     public class Stock
     {
         public Guid Id { get; set; }
@@ -17,6 +18,7 @@ namespace StockBook_App.Models.Entities
         public required string Industry { get; set; }
         public required long MarketCap { get; set; }
         public List<Comment> Comments { get; set; } = new List<Comment>();
+        public List<Portfolio> Portfolios { get; set; } = new List<Portfolio>();
 
     }
 }
