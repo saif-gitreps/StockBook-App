@@ -120,5 +120,10 @@ namespace StockBook_App.Repository
         {
             return await _dbContext.Stocks.AnyAsync(s => s.Id == id);
         }
+
+        public async Task<Stock?> GetStockBySymbolAsync(string symbol)
+        {
+            return await _dbContext.Stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using StockBook_App.Dtos.Comment;
 using StockBook_App.Interfaces;
@@ -46,6 +47,7 @@ namespace StockBook_App.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateCommentAsync([FromBody] CreateCommentDto createCommentDto)
         {
             if (ModelState.IsValid == false)
@@ -67,6 +69,7 @@ namespace StockBook_App.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateCommentAsync([FromRoute] Guid id, [FromBody] UpdateCommentRequestDto updateCommentDto)
         {
             if (ModelState.IsValid == false)
@@ -85,6 +88,7 @@ namespace StockBook_App.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> DeleteCommentAsync([FromRoute] Guid id)
         {
             if (ModelState.IsValid == false)

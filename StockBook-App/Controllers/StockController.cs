@@ -6,6 +6,7 @@ using StockBook_App.Interfaces;
 using StockBook_App.Mappers;
 using StockBook_App.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StockBook_App.Controllers
 {
@@ -56,6 +57,7 @@ namespace StockBook_App.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddStock([FromBody] AddStockDto addStockDto)
         {
             if (ModelState.IsValid == false)
@@ -70,6 +72,7 @@ namespace StockBook_App.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateAStock([FromRoute] Guid id, [FromBody] UpdateStockDto updteStockDto)
         {
             if (ModelState.IsValid == false)
@@ -89,6 +92,7 @@ namespace StockBook_App.Controllers
 
         [HttpPatch]
         [Route("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> PartiallyUpdateAStock([FromRoute] Guid id, [FromBody] PatiallyUpdateStockDto patiallyUpdateStockDto)
         {
             if (ModelState.IsValid == false)
@@ -109,7 +113,7 @@ namespace StockBook_App.Controllers
 
         [HttpDelete]
         [Route("{id:guid}")]
-
+        [Authorize]
         public async Task<IActionResult> DeleteAStock([FromRoute] Guid id)
         {
             if (ModelState.IsValid == false)

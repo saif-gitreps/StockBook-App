@@ -1,0 +1,82 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using StockBook_App.Extensions;
+using StockBook_App.Interfaces;
+using StockBook_App.Models.Entities;
+
+namespace StockBook_App.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PortfolioController : ControllerBase
+    {
+        private readonly IStockRepository _stockRepo;
+        private readonly UserManager<User> _userManager;
+        private readonly IPortfolioRepository _portfolioRepo;
+        public PortfolioController(UserManager<User> userManager, IStockRepository stockRepo, IPortfolioRepository portfolioRepo)
+        {
+            _stockRepo = stockRepo;
+            _userManager = userManager;
+            _portfolioRepo = portfolioRepo;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetUserPortfolio()
+        {
+            string? userName = User.GetUserName();
+            User user = await _userManager.FindByNameAsync(userName);
+            var userPortfolio = await _portfolioRepo.GetUserPortfolio(user);
+
+            return Ok(userPortfolio);
+        }
+
+        [HttpPost]
+        [Authorize]
+
+        public async Task<IActionResult> AddStockToPortfolio(string symbol)
+        {
+            // we get this User object from the JWT token
+            var userName = User.GetUserName();
+            User? user = await _userManager.FindByNameAsync(userName);
+            
+            if (user == null)
+            {
+                return Unauthorized("Unauthorized");
+            }
+
+            var existingPortfolio = await _portfolioRepo.GetUserPortfolio(user);
+
+            if (existingPortfolio.Any(p => p.Symbol.ToLower() == symbol.ToLower()))
+            {
+                return BadRequest("Stock already exists in portfolio");
+            }
+
+            Stock? stock = await _stockRepo.GetStockBySymbolAsync(symbol);
+
+            if (stock == null)
+            {
+                return BadRequest("No such stock available to add to portfolio");
+            }
+
+            Portfolio portfolio = new Portfolio
+            {
+                StockId = stock.Id,
+                UserId = user.Id
+            };
+
+            await _portfolioRepo.CreatePortfolioAsync(portfolio);
+
+            if (portfolio == null)
+            {
+                return BadRequest("Failed to add stock to portfolio");
+            } else
+            {
+                return Created();
+            }
+        }
+
+    }
+}
