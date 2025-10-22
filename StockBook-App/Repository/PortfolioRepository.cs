@@ -20,6 +20,22 @@ namespace StockBook_App.Repository
             return portfolio;
         }
 
+        public async Task<Portfolio?> DeletePortfolioAsync(User user, string symbol)
+        {
+            Portfolio? existingPortfolio = await _dbContext.Portfolios.FirstOrDefaultAsync(
+                p => p.UserId == user.Id && p.Stock.Symbol.ToLower() == symbol.ToLower());
+
+            if (existingPortfolio == null)
+            {
+                               return null;
+            }
+
+            _dbContext.Portfolios.Remove(existingPortfolio);
+            await _dbContext.SaveChangesAsync();
+
+            return existingPortfolio;
+        }
+
         public async Task<List<Stock>> GetUserPortfolioAsync(User user)
         {
             return await _dbContext.Portfolios.Where(u => u.UserId == user.Id).Select(stock => new Stock

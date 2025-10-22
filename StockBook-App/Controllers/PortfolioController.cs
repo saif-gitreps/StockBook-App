@@ -78,5 +78,33 @@ namespace StockBook_App.Controllers
             }
         }
 
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeletePortfolio(string symbol)
+        {
+            string? userName = User.GetUserName();
+            if (userName == null)
+            {
+                return Unauthorized("Unauthorized");
+            }
+
+            User user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return Unauthorized("Unauthorized");
+            }
+
+            List<Stock> portfolios = await _portfolioRepo.GetUserPortfolioAsync(user);
+            var portfolioToDelete = portfolios.Where(s => s.Symbol.ToLower() == symbol.ToLower()).ToList();
+
+            if (portfolioToDelete.Count == 0)
+            {
+                return BadRequest("No such stock in portfolio to delete");
+            }
+
+            await _portfolioRepo.DeletePortfolioAsync(user, symbol);
+            return Ok("Stock deleted successfully");
+        }
+
     }
 }

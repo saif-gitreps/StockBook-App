@@ -6,5 +6,6 @@ namespace StockBook_App.Interfaces
     {
         Task<List<Stock>> GetUserPortfolioAsync(User user);
         Task<Portfolio?> CreatePortfolioAsync(Portfolio portfolio);
+        Task<Portfolio?> DeletePortfolioAsync(User user, string symbol);
     }
 }
