@@ -37,19 +37,12 @@ namespace StockBook_App.Repository
 
         public async Task<List<Comment>> GetAllCommentsAsync()
         {
-            return await _dbContext.Comments.ToListAsync();
+            return await _dbContext.Comments.Include(c => c.User).ToListAsync();
         }
 
         public async Task<Comment?> GetCommentByIdAsync(Guid id)
         {
-            Comment? existingComment = await _dbContext.Comments.FirstOrDefaultAsync(c => c.Id == id);
-
-            if (existingComment == null)
-            {
-                return null;
-            }
-
-            return existingComment;
+            return await _dbContext.Comments.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<Comment?> UpdateCommentAsync(Guid id, Comment comment)

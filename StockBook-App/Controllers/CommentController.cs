@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockBook_App.Dtos.Comment;
+using StockBook_App.Extensions;
 using StockBook_App.Interfaces;
 using StockBook_App.Mappers;
 using StockBook_App.Models.Entities;
@@ -14,10 +16,12 @@ namespace StockBook_App.Controllers
     {
         private readonly ICommentRepository _commentRepo;
         private readonly IStockRepository _stockRepo;
-        public CommentController(ICommentRepository commentRepo, IStockRepository stockRepo)
+        private readonly UserManager<User> _userManager;
+        public CommentController(ICommentRepository commentRepo, IStockRepository stockRepo, UserManager<User> userManager)
         {
             _commentRepo = commentRepo;
             _stockRepo = stockRepo;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -61,7 +65,20 @@ namespace StockBook_App.Controllers
                 return BadRequest("No such stock available to add comment");
             }
 
+            string? userName = User.GetUserName();
+            if (userName == null)
+            {
+                return Unauthorized();
+            }
+
+            User? user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
             Comment comment = createCommentDto.ToCommentFromCreateDto(createCommentDto.StockId);
+            comment.UserId = user.Id;
             await _commentRepo.CreateCommentAsync(comment);
 
             return Ok(comment.ToCommentDto());

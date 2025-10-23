@@ -13,6 +13,8 @@ namespace StockBook_App.Models.Entities
         public Guid? StockId { get; set; }
 
         // Navigation property to the related Stock entity
-        public Stock? Stock { get; set; }
+        public Stock? Stock { get; set; } 
+        public User? User { get; set; }
+        public string? UserId { get; set; }
     }
 }

@@ -13,8 +13,8 @@ namespace StockBook_App.Mappers
                 Title = comment.Title,
                 Content = comment.Content,
                 Date = comment.Date,
-                StockId = comment.StockId
-
+                StockId = comment.StockId,
+                CreatedBy = comment?.User?.UserName ?? "User"
             };
 
         }

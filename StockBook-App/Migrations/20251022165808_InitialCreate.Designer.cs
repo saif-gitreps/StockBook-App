@@ -12,8 +12,8 @@ using StockBook_App.Data;
 namespace StockBook_App.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251022125002_Portfolio-many-to-many")]
-    partial class Portfoliomanytomany
+    [Migration("20251022165808_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -192,9 +192,14 @@ namespace StockBook_App.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StockId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -368,7 +373,13 @@ namespace StockBook_App.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("StockId");
 
+                    b.HasOne("StockBook_App.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Stock");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StockBook_App.Models.Entities.Portfolio", b =>

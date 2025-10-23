@@ -27,8 +27,19 @@ namespace StockBook_App.Controllers
         public async Task<IActionResult> GetUserPortfolio()
         {
             string? userName = User.GetUserName();
-            User user = await _userManager.FindByNameAsync(userName);
-            var userPortfolio = await _portfolioRepo.GetUserPortfolio(user);
+            if (userName == null)
+            {
+                return Unauthorized("Unauthorized");
+            }
+
+            User? user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return Unauthorized("Unauthorized");
+            }
+
+            var userPortfolio = await _portfolioRepo.GetUserPortfolioAsync(user);
 
             return Ok(userPortfolio);
         }
@@ -47,7 +58,7 @@ namespace StockBook_App.Controllers
                 return Unauthorized("Unauthorized");
             }
 
-            var existingPortfolio = await _portfolioRepo.GetUserPortfolio(user);
+            var existingPortfolio = await _portfolioRepo.GetUserPortfolioAsync(user);
 
             if (existingPortfolio.Any(p => p.Symbol.ToLower() == symbol.ToLower()))
             {
@@ -88,7 +99,7 @@ namespace StockBook_App.Controllers
                 return Unauthorized("Unauthorized");
             }
 
-            User user = await _userManager.FindByNameAsync(userName);
+            User? user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
                 return Unauthorized("Unauthorized");

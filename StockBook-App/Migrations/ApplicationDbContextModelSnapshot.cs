@@ -189,9 +189,14 @@ namespace StockBook_App.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("StockId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -365,7 +370,13 @@ namespace StockBook_App.Migrations
                         .WithMany("Comments")
                         .HasForeignKey("StockId");
 
+                    b.HasOne("StockBook_App.Models.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
                     b.Navigation("Stock");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("StockBook_App.Models.Entities.Portfolio", b =>

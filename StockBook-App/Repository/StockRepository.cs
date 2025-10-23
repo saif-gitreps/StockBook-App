@@ -35,7 +35,10 @@ namespace StockBook_App.Repository
 
         public async Task<List<Stock>> GetALLStockAsync(StockQueryDto stockQueryDto)
         {
-            IQueryable<Stock> stocks = _dbContext.Stocks.Include(s => s.Comments).AsQueryable();
+            IQueryable<Stock> stocks = _dbContext.Stocks.
+                Include(s => s.Comments).
+                ThenInclude(u => u.User).
+                AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(stockQueryDto.Symbol))
             {
