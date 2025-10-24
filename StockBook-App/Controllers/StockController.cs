@@ -52,7 +52,6 @@ namespace StockBook_App.Controllers
                 return NotFound("No such stock available");
             }
 
-
             return Ok(stock.ToStockDto());
         }
 
