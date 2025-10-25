@@ -17,11 +17,17 @@ namespace StockBook_App.Controllers
         private readonly ICommentRepository _commentRepo;
         private readonly IStockRepository _stockRepo;
         private readonly UserManager<User> _userManager;
-        public CommentController(ICommentRepository commentRepo, IStockRepository stockRepo, UserManager<User> userManager)
+        private readonly IFMPService _fmpService;
+        public CommentController(
+            ICommentRepository commentRepo, 
+            IStockRepository stockRepo, 
+            UserManager<User> userManager,
+            IFMPService fmpService)
         {
             _commentRepo = commentRepo;
             _stockRepo = stockRepo;
             _userManager = userManager;
+            _fmpService = fmpService;
         }
 
         [HttpGet]
@@ -59,11 +65,25 @@ namespace StockBook_App.Controllers
                 return BadRequest(ModelState);
             }
 
+            Stock? stock = await _stockRepo.GetStockBySymbolAsync(createCommentDto.Symbol);
 
-            if (await _stockRepo.StockExists(createCommentDto.StockId) == false)
+            if (stock == null)
             {
-                return BadRequest("No such stock available to add comment");
+                stock = await _fmpService.FindStockBySymbolAsync(createCommentDto.Symbol);
+                if (stock == null)
+                {
+                    return BadRequest("No such stock exists");
+                }
+                else
+                {
+                    await _stockRepo.AddStockAsync(stock);
+                }
             }
+
+            //if (await _stockRepo.StockExists(createCommentDto.StockId) == false)
+            //{
+            //    return BadRequest("No such stock available to add comment");
+            //}
 
             string? userName = User.GetUserName();
             if (userName == null)
@@ -77,7 +97,7 @@ namespace StockBook_App.Controllers
                 return Unauthorized();
             }
 
-            Comment comment = createCommentDto.ToCommentFromCreateDto(createCommentDto.StockId);
+            Comment comment = createCommentDto.ToCommentFromCreateDto(stock.Id);
             comment.UserId = user.Id;
             await _commentRepo.CreateCommentAsync(comment);
 

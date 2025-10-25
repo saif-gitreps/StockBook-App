@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using StockBook_App.Dtos.Comment;
 using StockBook_App.Extensions;
 using StockBook_App.Interfaces;
 using StockBook_App.Models.Entities;
+using StockBook_App.Services;
 
 namespace StockBook_App.Controllers
 {
@@ -15,11 +17,18 @@ namespace StockBook_App.Controllers
         private readonly IStockRepository _stockRepo;
         private readonly UserManager<User> _userManager;
         private readonly IPortfolioRepository _portfolioRepo;
-        public PortfolioController(UserManager<User> userManager, IStockRepository stockRepo, IPortfolioRepository portfolioRepo)
+        private readonly IFMPService _fmpService;
+        public PortfolioController(
+            UserManager<User> userManager, 
+            IStockRepository stockRepo, 
+            IPortfolioRepository portfolioRepo,
+            IFMPService fmpService
+        )
         {
             _stockRepo = stockRepo;
             _userManager = userManager;
             _portfolioRepo = portfolioRepo;
+            _fmpService = fmpService;
         }
 
         [HttpGet]
@@ -69,7 +78,15 @@ namespace StockBook_App.Controllers
 
             if (stock == null)
             {
-                return BadRequest("No such stock available to add to portfolio");
+                stock = await _fmpService.FindStockBySymbolAsync(symbol);
+                if (stock == null)
+                {
+                    return BadRequest("No such stock exists");
+                }
+                else
+                {
+                    await _stockRepo.AddStockAsync(stock);
+                }
             }
 
             Portfolio portfolio = new Portfolio

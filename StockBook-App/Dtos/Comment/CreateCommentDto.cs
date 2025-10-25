@@ -5,7 +5,7 @@ namespace StockBook_App.Dtos.Comment
     public class CreateCommentDto
     {
         [Required]
-        public required Guid StockId { get; set; }
+        public required string Symbol{ get; set; }
 
         [Required]
         [MinLength(5, ErrorMessage = "Title must be at least 5 characters long.")]
