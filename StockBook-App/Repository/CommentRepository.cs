@@ -2,6 +2,8 @@
 using StockBook_App.Interfaces;
 using StockBook_App.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using StockBook_App.Dtos.Comment;
+using System.Runtime.InteropServices;
 
 namespace StockBook_App.Repository
 {     
@@ -35,9 +37,19 @@ namespace StockBook_App.Repository
             return true;
         }
 
-        public async Task<List<Comment>> GetAllCommentsAsync()
+        public async Task<List<Comment>> GetAllCommentsAsync(CommentQueryDto commentQueryDto)
         {
-            return await _dbContext.Comments.Include(c => c.User).ToListAsync();
+            IQueryable<Comment> comments = _dbContext.Comments.Include(c => c.User).AsQueryable();
+            if (!string.IsNullOrEmpty(commentQueryDto.Symbol))
+            {
+                comments = comments.Where(c => c.Stock.Symbol == commentQueryDto.Symbol);
+            }
+            if (commentQueryDto.isDesc == true)
+            {
+                comments = comments.OrderByDescending(c => c.Date);
+            }
+
+            return await comments.ToListAsync();
         }
 
         public async Task<Comment?> GetCommentByIdAsync(Guid id)

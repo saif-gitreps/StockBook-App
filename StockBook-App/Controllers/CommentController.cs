@@ -31,9 +31,10 @@ namespace StockBook_App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCommentsAsync()
+        [Authorize]
+        public async Task<IActionResult> GetAllCommentsAsync([FromQuery] CommentQueryDto commentQueryDto)
         {
-            List<Comment> comments = await _commentRepo.GetAllCommentsAsync();
+            List<Comment> comments = await _commentRepo.GetAllCommentsAsync(commentQueryDto);
 
             return Ok(comments.Select(c => c.ToCommentDto()));
         }
