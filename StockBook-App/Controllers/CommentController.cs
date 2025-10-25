@@ -87,16 +87,16 @@ namespace StockBook_App.Controllers
             //}
 
             string? userName = User.GetUserName();
-            if (userName == null)
-            {
-                return Unauthorized();
-            }
+            //if (userName == null)
+            //{
+            //    return Unauthorized();
+            //}
 
             User? user = await _userManager.FindByNameAsync(userName);
-            if (user == null)
-            {
-                return Unauthorized();
-            }
+            //if (user == null)
+            //{
+            //    return Unauthorized();
+            //}
 
             Comment comment = createCommentDto.ToCommentFromCreateDto(stock.Id);
             comment.UserId = user.Id;

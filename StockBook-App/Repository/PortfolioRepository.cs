@@ -27,7 +27,7 @@ namespace StockBook_App.Repository
 
             if (existingPortfolio == null)
             {
-                               return null;
+                return null;
             }
 
             _dbContext.Portfolios.Remove(existingPortfolio);

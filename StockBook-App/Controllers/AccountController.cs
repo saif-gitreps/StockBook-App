@@ -14,13 +14,22 @@ namespace StockBook_App.Controllers
         private readonly UserManager<User> _userManager;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<User> _signInManager;
-        public AccountController(UserManager<User> userManager, ITokenService tokenService, SignInManager<User> signInManager) 
+        private readonly ILogger<AccountController> _logger;
+
+        public AccountController(
+            UserManager<User> userManager,
+            ITokenService tokenService,
+            SignInManager<User> signInManager,
+            ILogger<AccountController> logger
+            )
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _signInManager = signInManager;
+            _logger = logger;
         }
-        [HttpPost]
-        [Route("login")]
+
+        [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             if (!ModelState.IsValid)
@@ -35,7 +44,6 @@ namespace StockBook_App.Controllers
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-
             if (!result.Succeeded)
             {
                 return Unauthorized("Invalid username or password.");
@@ -49,48 +57,47 @@ namespace StockBook_App.Controllers
             });
         }
 
-        [HttpPost]
-        [Route("register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);   
+                    return BadRequest(ModelState);
                 }
 
-                User user = new User
+                var user = new User
                 {
                     UserName = registerDto.UserName,
                     Email = registerDto.Email
                 };
 
-                IdentityResult? createdUser = await _userManager.CreateAsync(user, registerDto.Password);
+                var createdUser = await _userManager.CreateAsync(user, registerDto.Password);
 
-                if (createdUser.Succeeded)
+                if (!createdUser.Succeeded)
                 {
-                    IdentityResult? addRoleResult = await _userManager.AddToRoleAsync(user, "User");
-                    if (addRoleResult.Succeeded)
-                    {
-                        return Ok(new NewUserDto
-                        {
-                            UserName = user.UserName,
-                            Email = user.Email,
-                            Token = _tokenService.CreateToken(user)
-                        });
-                    }
-                    else
-                    {
-                        return StatusCode(500, addRoleResult.Errors);
-                    }
-                } else
-                {
-                    return StatusCode(500, createdUser.Errors);
+                    return BadRequest(createdUser.Errors);
                 }
-            } catch (Exception ex)
+
+                var addRoleResult = await _userManager.AddToRoleAsync(user, "User");
+
+                if (!addRoleResult.Succeeded)
+                {
+                    return StatusCode(500, addRoleResult.Errors);
+                }
+
+                return Ok(new NewUserDto
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Token = _tokenService.CreateToken(user)
+                });
+            }
+            catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(ex, "Error occurred during user registration.");
+                return StatusCode(500, new { message = "An unexpected error occurred during registration." });
             }
         }
     }

@@ -24,6 +24,7 @@ namespace StockBook_App.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllStocks([FromQuery] StockQueryDto query)
         {
             if (ModelState.IsValid == false)
@@ -67,6 +68,27 @@ namespace StockBook_App.Controllers
             Stock stock = await _stockRepo.AddStockAsync(addStockDto.ToStockFromAddStockDto());
 
             return CreatedAtAction(nameof(GetStockById), new { id = stock.Id }, stock.ToStockDto());
+        }
+
+        [HttpPost("multiple")]
+        [Authorize]
+        public async Task<IActionResult> AddMultipleStocks([FromBody] List<AddStockDto> addStockDtos)
+        {
+            if (ModelState.IsValid == false)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try {
+                foreach (var addStockDto in addStockDtos)
+                {
+                    Stock stock = await _stockRepo.AddStockAsync(addStockDto.ToStockFromAddStockDto());
+                }
+                return Ok("Stocks added successfully");
+            } catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while adding multiple stocks.");
+            }
         }
 
         [HttpPut]
