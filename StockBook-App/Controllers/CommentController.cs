@@ -86,7 +86,7 @@ namespace StockBook_App.Controllers
             //    return BadRequest("No such stock available to add comment");
             //}
 
-            string? userName = User.GetUserName();
+            string? userName = User.GetUsername();
             //if (userName == null)
             //{
             //    return Unauthorized();

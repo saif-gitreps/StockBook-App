@@ -35,7 +35,7 @@ namespace StockBook_App.Controllers
         [Authorize]
         public async Task<IActionResult> GetUserPortfolio()
         {
-            string? userName = User.GetUserName();
+            string? userName = User.GetUsername();
             if (userName == null)
             {
                 return Unauthorized("Unauthorized");
@@ -59,7 +59,7 @@ namespace StockBook_App.Controllers
         public async Task<IActionResult> AddStockToPortfolio(string symbol)
         {
             // we get this User object from the JWT token
-            var userName = User.GetUserName();
+            var userName = User.GetUsername();
             User? user = await _userManager.FindByNameAsync(userName);
             
             if (user == null)
@@ -110,7 +110,7 @@ namespace StockBook_App.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePortfolio(string symbol)
         {
-            string? userName = User.GetUserName();
+            string? userName = User.GetUsername();
             if (userName == null)
             {
                 return Unauthorized("Unauthorized");
