@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StockBook_App.Dtos.Account;
+using StockBook_App.Extensions;
 using StockBook_App.Interfaces;
 using StockBook_App.Models.Entities;
 
@@ -99,6 +101,21 @@ namespace StockBook_App.Controllers
                 _logger.LogError(ex, "Error occurred during user registration.");
                 return StatusCode(500, new { message = "An unexpected error occurred during registration." });
             }
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userName = User.GetUsername();
+            User? user = await _userManager.FindByNameAsync(userName);
+
+            if (user == null)
+            {
+                return Unauthorized("Unauthorized");
+            }
+
+            return Ok(user);
         }
     }
 }
