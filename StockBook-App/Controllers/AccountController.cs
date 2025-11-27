@@ -35,7 +35,7 @@ namespace StockBook_App.Controllers
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             if (!ModelState.IsValid)
-            {
+            { 
                 return BadRequest(ModelState);
             }
 
@@ -51,11 +51,26 @@ namespace StockBook_App.Controllers
                 return Unauthorized("Invalid username or password.");
             }
 
+            var token = _tokenService.CreateToken(user);
+
+            Response.Cookies.Append("auth_token",
+                token,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = false,
+                    Expires = DateTimeOffset.UtcNow.AddHours(1),
+                    Path = "/"
+                }
+            );
+
+
             return Ok(new NewUserDto
             {
+                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
-                Token = _tokenService.CreateToken(user)
+                Token = token
             });
         }
 
@@ -89,11 +104,24 @@ namespace StockBook_App.Controllers
                     return StatusCode(500, addRoleResult.Errors);
                 }
 
+                var token = _tokenService.CreateToken(user);
+
+                Response.Cookies.Append("auth_token",
+                    token,
+                    new CookieOptions {
+                        HttpOnly = true,
+                        Secure = false,
+                        Expires = DateTimeOffset.UtcNow.AddHours(1),
+                        Path="/"
+                    }
+                );
+
                 return Ok(new NewUserDto
                 {
+                    Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
+                    Token = token
                 });
             }
             catch (Exception ex)

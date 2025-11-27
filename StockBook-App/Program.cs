@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using StockBook_App.Data;
 using StockBook_App.Interfaces;
@@ -12,32 +11,26 @@ using StockBook_App.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddControllers();
-
-// To avoid object cycle issues when serializing entities with navigation properties aka circular references.
+// To avoid object cycle issues
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
-
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-
 }).AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultAuthenticateScheme = 
-    options.DefaultChallengeScheme =
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultForbidScheme =
     options.DefaultScheme =
     options.DefaultSignInScheme =
@@ -55,6 +48,30 @@ builder.Services.AddAuthentication(options =>
             System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SignInKey"]!)
         )
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (context.Request.Cookies.ContainsKey("auth_token"))
+            {
+                context.Token = context.Request.Cookies["auth_token"];
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader()
+                  .AllowCredentials();
+        });
 });
 
 builder.Services.AddScoped<IStockRepository, StockRepository>();
@@ -76,20 +93,13 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+
+// IMPORTANT: CORS must come BEFORE Authentication/Authorization
+app.UseCors("AllowReactApp");
+
 app.UseHttpsRedirection();
 
-app.UseCors(options => options
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .AllowCredentials()
-    // .WithOrigins("http://localhost:3000");
-    .SetIsOriginAllowed(origin => true)
-);
-
 app.UseAuthentication();
-
-app.UseAuthorization();
-
 app.UseAuthorization();
 
 app.MapControllers();

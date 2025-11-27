@@ -1,19 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "../../lib/api";
+import { apiClient } from "../../../lib/api";
+import type { User } from "../../../types/common";
 
 interface AuthCheckResponse {
-   user: {
-      id: string;
-      email: string;
-      userName: string;
-   };
+   user: User;
 }
 
 export const useAuthCheck = () => {
    return useQuery({
       queryKey: ["auth-check"],
       queryFn: async () => {
-         const data = await apiClient.get<AuthCheckResponse>("/auth/me");
+         const data = await apiClient.get<AuthCheckResponse>("/api/Account/me");
          return data;
       },
       retry: false,
