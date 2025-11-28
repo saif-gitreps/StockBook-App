@@ -140,7 +140,7 @@ namespace StockBook_App.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Unauthorized");
+                return Unauthorized();
             }
 
             return Ok(user);

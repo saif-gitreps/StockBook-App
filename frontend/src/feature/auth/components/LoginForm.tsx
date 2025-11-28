@@ -12,7 +12,7 @@ function LoginForm() {
       formState: { errors },
    } = useForm<LoginFormData>();
 
-   const { mutate: login, isPending, error } = useSignIn();
+   const { mutate: login, isPending } = useSignIn();
 
    const onSubmit = (data: LoginFormData) => {
       console.log(data);
@@ -84,8 +84,6 @@ function LoginForm() {
                   Sign in as a guest <ArrowUpRight />{" "}
                </GuestLoginButton> */}
             </div>
-
-            <div className="text-red-600">{error && <>Error: {error.message}</>}</div>
          </div>
       </form>
    );

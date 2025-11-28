@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "../../../lib/api";
 import type { User } from "../../../types/common";
+import apiClient from "@/lib/apiClient";
 
 interface AuthCheckResponse {
    user: User;

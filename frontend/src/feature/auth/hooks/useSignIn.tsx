@@ -1,9 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api";
 import { useAppDispatch } from "@/store/hooks";
 import { setCredentials } from "@/store/slices/AuthSlice";
 import type { LoginFormData, User } from "@/types/common";
 import { useNavigate } from "react-router-dom";
+import { handleError } from "@/lib/errorHandler";
+import apiClient from "@/lib/apiClient";
 
 function useSignIn() {
    const dispatch = useAppDispatch();
@@ -15,14 +16,14 @@ function useSignIn() {
             "/api/account/login",
             data
          );
-         return response;
+         return response.data;
       },
       onSuccess: (data: { user: User }) => {
          dispatch(setCredentials({ user: data.user }));
          navigate("/");
       },
       onError: (error) => {
-         console.log(error.message);
+         handleError(error);
       },
    });
 }
