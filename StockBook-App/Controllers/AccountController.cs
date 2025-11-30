@@ -58,8 +58,8 @@ namespace StockBook_App.Controllers
                 new CookieOptions
                 {
                     HttpOnly = true,
-                    Secure = false,
-                    Expires = DateTimeOffset.UtcNow.AddHours(1),
+                    Secure = true,
+                    SameSite= SameSiteMode.None,
                     Path = "/"
                 }
             );
@@ -68,9 +68,8 @@ namespace StockBook_App.Controllers
             return Ok(new NewUserDto
             {
                 Id = user.Id,
-                UserName = user.UserName,
                 Email = user.Email,
-                Token = token
+                UserName = user.UserName,
             });
         }
 
@@ -117,11 +116,10 @@ namespace StockBook_App.Controllers
                 );
 
                 return Ok(new NewUserDto
-                {
+                { 
                     Id = user.Id,
-                    UserName = user.UserName,
                     Email = user.Email,
-                    Token = token
+                    UserName = user.UserName,
                 });
             }
             catch (Exception ex)

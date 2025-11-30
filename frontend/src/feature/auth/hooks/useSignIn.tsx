@@ -11,17 +11,34 @@ function useSignIn() {
    const navigate = useNavigate();
 
    return useMutation({
+      // API returns the User object directly
       mutationFn: async (data: LoginFormData) => {
-         const response = await apiClient.post<{ user: User }>(
-            "/api/account/login",
-            data
+         const response = await apiClient.post<User>("/api/account/login", data);
+
+         // response.data IS the user object
+         console.log("AXIOS FULL RESPONSE:", response);
+         console.log("RESPONSE DATA:", response.data);
+
+         return response.data; // user object
+      },
+
+      onSuccess: (user) => {
+         console.log("ON SUCCESS RECEIVED:", user);
+
+         // No user.user — user *is* the returned object
+         dispatch(
+            setCredentials({
+               user: {
+                  id: user.id,
+                  email: user.email,
+                  userName: user.userName,
+               },
+            })
          );
-         return response.data;
+
+         navigate("/search");
       },
-      onSuccess: (data: { user: User }) => {
-         dispatch(setCredentials({ user: data.user }));
-         navigate("/");
-      },
+
       onError: (error) => {
          handleError(error);
       },

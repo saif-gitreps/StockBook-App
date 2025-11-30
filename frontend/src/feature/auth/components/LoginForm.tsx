@@ -15,7 +15,6 @@ function LoginForm() {
    const { mutate: login, isPending } = useSignIn();
 
    const onSubmit = (data: LoginFormData) => {
-      console.log(data);
       login(data);
    };
 
@@ -23,12 +22,12 @@ function LoginForm() {
       <form onSubmit={handleSubmit(onSubmit)}>
          <div className="max-w-2xl mx-auto">
             <div>
-               <h1 className="text-3xl font-bold">Sign in</h1>
+               <h1 className="text-3xl font-bold">Login</h1>
                <p className="text-lg font-normal">
                   Do not have an account?{" "}
                   <Button variant="outline" type="button" asChild>
-                     <Link to="/sign-up" className="text-lg">
-                        Sign up
+                     <Link to="/register" className="text-lg">
+                        Register
                         <ArrowRight size={24} />
                      </Link>
                   </Button>
@@ -77,7 +76,7 @@ function LoginForm() {
 
             <div className="flex items-center gap-2 mt-2">
                <Button type="submit" className="w-36" disabled={isPending}>
-                  {isPending ? "Signing in.." : "Sign in"}
+                  {isPending ? "Please wait.." : "Login"}
                </Button>
 
                {/* <GuestLoginButton variant={"link"}>

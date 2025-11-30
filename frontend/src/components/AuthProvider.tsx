@@ -3,27 +3,29 @@ import { useAuthCheck } from "../feature/auth/hooks/useAuthCheck";
 import { useAppDispatch } from "../store/hooks";
 import Loader from "./Loader";
 import { setCredentials } from "../store/slices/AuthSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
-   const { data, isLoading, isFetching, isError } = useAuthCheck();
+   const { data, isLoading, isError } = useAuthCheck();
    const dispatch = useAppDispatch();
-
-   console.log(data?.user);
+   const navigate = useNavigate();
 
    useEffect(() => {
-      if (!data?.user) {
-         return;
+      if (data) {
+         dispatch(
+            setCredentials({
+               user: data,
+            })
+         );
       }
 
-      dispatch(setCredentials({ user: data.user }));
-   }, [data?.user, dispatch]);
+      if (isError) {
+         navigate("/login");
+      }
+   }, [data, isError, dispatch, navigate]);
 
-   if (isLoading || isFetching) {
+   if (isLoading) {
       return <Loader>Loading..</Loader>;
-   }
-
-   if (isError) {
-      return <>{children}</>;
    }
 
    return <>{children}</>;

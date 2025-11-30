@@ -8,16 +8,19 @@ import { store } from "./store/store.ts";
 import { queryClient } from "./lib/queryClient.ts";
 import Layout from "./layouts/Layout.tsx";
 import AuthProvider from "./components/AuthProvider.tsx";
+import { BrowserRouter as Router } from "react-router-dom";
 
 createRoot(document.getElementById("root")!).render(
    <StrictMode>
       <Provider store={store}>
          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-               <Layout>
-                  <App />
-               </Layout>
-            </AuthProvider>
+            <Router>
+               <AuthProvider>
+                  <Layout>
+                     <App />
+                  </Layout>
+               </AuthProvider>
+            </Router>
          </QueryClientProvider>
       </Provider>
    </StrictMode>

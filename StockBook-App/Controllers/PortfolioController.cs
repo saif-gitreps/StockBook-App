@@ -56,7 +56,7 @@ namespace StockBook_App.Controllers
         [HttpPost]
         [Authorize]
 
-        public async Task<IActionResult> AddStockToPortfolio(string symbol)
+        public async Task<IActionResult> AddStockToPortfolio([FromQuery] string symbol)
         {
             // we get this User object from the JWT token
             var userName = User.GetUsername();
@@ -108,7 +108,7 @@ namespace StockBook_App.Controllers
 
         [HttpDelete]
         [Authorize]
-        public async Task<IActionResult> DeletePortfolio(string symbol)
+        public async Task<IActionResult> DeletePortfolio([FromQuery] string symbol)
         {
             string? userName = User.GetUsername();
             if (userName == null)
