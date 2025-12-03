@@ -1,11 +1,14 @@
 import Loader from "@/components/Loader";
+import CompanyComps from "@/feature/company/component/CompanyComps";
 import Sidebar from "@/feature/company/component/Sidebar";
+import TenK from "@/feature/company/component/TenK";
 import Tile from "@/feature/company/component/Tile";
 import useGetCompanyProfile from "@/feature/company/hooks/useGetCompanyProfile";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 
 function Company() {
-   const { data: company, isLoading } = useGetCompanyProfile();
+   const { ticker } = useParams();
+   const { data: company, isLoading } = useGetCompanyProfile(ticker as string);
 
    if (isLoading) {
       return <Loader />;
@@ -23,10 +26,10 @@ function Company() {
                         <Tile title="Price" subTitle={"$" + company?.price.toString()} />
                         <Tile title="DCF" subTitle={"$" + company?.dcf.toString()} />
                         <Tile title="Sector" subTitle={company?.sector} />
-                        <CompFinder ticker={company?.symbol} />
-                        <TenKFinder ticker={company?.symbol} />
+                        <CompanyComps ticker={company?.symbol} />
+                        <TenK ticker={company?.symbol} />
                         <p className="bg-white shadow rounded text-medium font-medium text-gray-900 p-3 mt-1 m-4">
-                           {company.description}
+                           {company?.description}
                         </p>
                      </div>
                      <div className="flex flex-wrap">{<Outlet context={ticker} />}</div>
