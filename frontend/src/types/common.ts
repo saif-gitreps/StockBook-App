@@ -31,3 +31,8 @@ export type Comment = {
    content: string;
    createdBy: string;
 };
+
+export type CommentFormData = {
+   title: string;
+   content: string;
+};

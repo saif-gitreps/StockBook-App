@@ -16,7 +16,7 @@ function Home() {
 
                <div className="mx-auto lg:mx-0">
                   <Link
-                     to="/search"
+                     to="/login"
                      className="py-5 px-10 text-2xl font-bold text-gray-700 underline bg-lightGreen rounded lg:py-4 hover:opacity-70 flex items-center gap-2"
                   >
                      Get Started <ArrowRight />

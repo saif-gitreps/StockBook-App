@@ -18,10 +18,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             })
          );
       }
-
-      if (isError) {
-         navigate("/login");
-      }
    }, [data, isError, dispatch, navigate]);
 
    if (isLoading) {
