@@ -26,13 +26,29 @@ export type Portfolio = {
    comments: Comment;
 };
 
+export type Stock = {
+   id: string;
+   symbol: string;
+   companyName: string;
+   purchase: number;
+   lastDiv: number;
+   industry: string;
+   marketCap: number;
+   comments: Comment[];
+   portfolios: Portfolio[];
+};
+
 export type Comment = {
+   id: string;
    title: string;
    content: string;
+   data: Date;
+   stockId: string;
    createdBy: string;
 };
 
 export type CommentFormData = {
+   symbol: string;
    title: string;
    content: string;
 };

@@ -13,7 +13,6 @@ function useSignIn() {
    return useMutation({
       mutationFn: async (data: LoginFormData) => {
          const response = await apiClient.post<User>("/api/account/login", data);
-
          return response.data;
       },
 
@@ -30,7 +29,7 @@ function useSignIn() {
             })
          );
 
-         navigate("/search");
+         navigate("/dashboard");
       },
 
       onError: (error) => {

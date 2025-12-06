@@ -6,9 +6,7 @@ function useGetStockComments(symbol: string) {
    return useQuery({
       queryKey: ["comments", symbol],
       queryFn: async () => {
-         const response = await apiClient.get<Comment[]>(
-            "/api/comments?symbol=" + symbol
-         );
+         const response = await apiClient.get<Comment[]>("/api/comment?Symbol=" + symbol);
          return response.data;
       },
    });

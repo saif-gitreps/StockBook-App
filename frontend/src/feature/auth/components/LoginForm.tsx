@@ -19,13 +19,13 @@ function LoginForm() {
    };
 
    return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-         <div className="max-w-2xl mx-auto">
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-black h-screen">
+         <div className="max-w-2xl mx-auto pt-10 text-white">
             <div>
                <h1 className="text-3xl font-bold">Login</h1>
                <p className="text-lg font-normal">
                   Do not have an account?{" "}
-                  <Button variant="outline" type="button" asChild>
+                  <Button variant="secondary" type="button" asChild>
                      <Link to="/register" className="text-lg">
                         Register
                         <ArrowRight size={24} />
@@ -35,7 +35,7 @@ function LoginForm() {
             </div>
 
             <div className="flex flex-col gap-5">
-               <label htmlFor="email" className="text-gray-700 text-md font-bold flex-1">
+               <label htmlFor="email" className="text-gray-400 text-md font-bold flex-1">
                   User name:
                   <input
                      type="text"
@@ -52,7 +52,7 @@ function LoginForm() {
 
                <label
                   htmlFor="password"
-                  className="text-gray-700 text-md font-bold flex-1"
+                  className="text-gray-400 text-md font-bold flex-1"
                >
                   Password:
                   <input

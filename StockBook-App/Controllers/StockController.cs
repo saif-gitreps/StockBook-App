@@ -38,15 +38,15 @@ namespace StockBook_App.Controllers
         }
 
         [HttpGet]
-        [Route("{id:guid}")]
-        public async Task<IActionResult> GetStockById([FromRoute] Guid id)
+        [Route("{symbol}")]
+        public async Task<IActionResult> GetStockById([FromRoute] String symbol)
         {
             if (ModelState.IsValid == false)
             {
                 return BadRequest(ModelState);
             }
 
-            Stock? stock = await _stockRepo.GetStockByIdAsync(id);
+            Stock? stock = await _stockRepo.GetStockBySymbolAsync(symbol);
 
             if (stock == null)
             {

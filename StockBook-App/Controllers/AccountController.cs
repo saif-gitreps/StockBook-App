@@ -64,7 +64,6 @@ namespace StockBook_App.Controllers
                 }
             );
 
-
             return Ok(new NewUserDto
             {
                 Id = user.Id,
@@ -142,6 +141,20 @@ namespace StockBook_App.Controllers
             }
 
             return Ok(user);
+        }
+
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("auth_token", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Path = "/"
+            });
+            return Ok(new { message = "Logged out successfully." });
         }
     }
 }

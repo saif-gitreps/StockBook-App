@@ -61,9 +61,9 @@ namespace StockBook_App.Repository
             return await stocks.Skip(skip).Take(stockQueryDto.PageSize).ToListAsync();
         }
 
-        public async Task<Stock?> GetStockByIdAsync(Guid id)
+        public async Task<Stock?> GetStockBySymbolAsync(String symbol)
         {
-           return await _dbContext.Stocks.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Id == id);
+           return await _dbContext.Stocks.Include(s => s.Comments).FirstOrDefaultAsync(s => s.Symbol == symbol);
         }
 
         public async Task<Stock?> UpdateStockAsync(Guid id, UpdateStockDto updateStockDto)
@@ -122,11 +122,6 @@ namespace StockBook_App.Repository
         public async Task<bool> StockExists(Guid id)
         {
             return await _dbContext.Stocks.AnyAsync(s => s.Id == id);
-        }
-
-        public async Task<Stock?> GetStockBySymbolAsync(string symbol)
-        {
-            return await _dbContext.Stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
         }
     }
 }

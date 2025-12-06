@@ -6,8 +6,8 @@ function useGetPortfolio() {
    return useQuery({
       queryKey: ["portfolio"],
       queryFn: async () => {
-         const data = await apiClient.get<Portfolio[]>("/api/portfolio");
-         return data;
+         const response = await apiClient.get<Portfolio[]>("/api/portfolio");
+         return response.data;
       },
    });
 }

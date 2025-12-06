@@ -6,13 +6,13 @@ namespace StockBook_App.Interfaces
     public interface IStockRepository
     {
         Task<List<Stock>> GetALLStockAsync(StockQueryDto stockQueryDto);
-        Task<Stock?> GetStockByIdAsync(Guid id);
+        Task<Stock?> GetStockBySymbolAsync(String symbol);
         Task<Stock> AddStockAsync(Stock stock);
         Task<Stock?> UpdateStockAsync(Guid id, UpdateStockDto updateStockDto);
         Task<Stock?> PartiallyUpdateStockAsync(Guid id, PatiallyUpdateStockDto patiallyUpdateStockDto);
         Task<Stock?> DeleteStockAsync(Guid id);
         Task<bool> StockExists(Guid id);
-        Task<Stock?> GetStockBySymbolAsync(string symbol);
+ 
 
     }
 }

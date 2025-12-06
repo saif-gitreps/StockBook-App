@@ -1,38 +1,73 @@
-import { Route, Routes } from "react-router-dom";
-import { useAppSelector } from "./store/hooks";
+import { Navigate, Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import Register from "./pages/Register";
-import Home from "./pages/Home";
-import Search from "./pages/Search";
-import Company from "./pages/Company";
-import CompanyProfile from "./pages/CompanyProfile";
+import Dashboard from "./pages/Dashboard";
+import LandingPage from "./pages/LandingPage";
+import StockExplorer from "./pages/StockExplorer";
+import Portfolio from "./pages/Portfolio";
+import StockDetails from "./pages/StockDetails";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-   const { isAuthenticated } = useAppSelector((state) => state.auth);
-
    return (
       <Routes>
-         {<Route path="/" element={<Home />} />}
-         {isAuthenticated && <Route path="/search" element={<Search />} />}
-         {!isAuthenticated && <Route path="/login" element={<LoginPage />} />}
-         {!isAuthenticated && <Route path="/register" element={<Register />} />}
-         {isAuthenticated && (
-            <Route path="/company" element={<Company />}>
-               <Route path="/company-profile" element={<CompanyProfile />} />
-               {/* <Route path="income-statement" element={<IncomeStatement />} />
-               <Route path="balance-sheet" element={<BalanceSheet />} />
-               <Route path="cashflow-statement" element={<CashflowStatement />} />
-               <Route path="historical-dividend" element={<HistoricalDividend />} /> */}
-            </Route>
-         )}
-         {
-            <Route
-               path="/*"
-               element={
-                  <div className="text-center text-red-400">404 Page not found</div>
-               }
-            />
-         }
+         <Route path="/" element={<LandingPage />} />
+
+         <Route
+            path="/login"
+            element={
+               <ProtectedRoute auth={false}>
+                  <LoginPage />
+               </ProtectedRoute>
+            }
+         />
+
+         <Route
+            path="/register"
+            element={
+               <ProtectedRoute auth={false}>
+                  <Register />
+               </ProtectedRoute>
+            }
+         />
+
+         <Route
+            path="/dashboard"
+            element={
+               <ProtectedRoute>
+                  <Dashboard />
+               </ProtectedRoute>
+            }
+         />
+
+         <Route
+            path="/explorer"
+            element={
+               <ProtectedRoute>
+                  <StockExplorer />
+               </ProtectedRoute>
+            }
+         />
+
+         <Route
+            path="/portfolio"
+            element={
+               <ProtectedRoute>
+                  <Portfolio />
+               </ProtectedRoute>
+            }
+         />
+
+         <Route
+            path="/stock/:symbol"
+            element={
+               <ProtectedRoute>
+                  <StockDetails />
+               </ProtectedRoute>
+            }
+         />
+
+         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
    );
 }
