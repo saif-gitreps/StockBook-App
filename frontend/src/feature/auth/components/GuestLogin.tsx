@@ -14,7 +14,7 @@ function GuestLogin() {
          }
          disabled={isPending}
       >
-         Try as Guest
+         {isPending ? "Please wait.." : "Try as a Guest"}
       </Button>
    );
 }
