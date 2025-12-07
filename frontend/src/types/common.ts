@@ -4,6 +4,12 @@ export type User = {
    userName: string;
 };
 
+export type UpdateUserForm = {
+   email: string;
+   userName: string;
+   password: string;
+};
+
 export type LoginFormData = {
    userName: string;
    password: string;

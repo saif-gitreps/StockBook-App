@@ -12,15 +12,12 @@ function useSignUp() {
 
    return useMutation({
       mutationFn: async (data: RegisterFormData) => {
-         const response = await apiClient.post<{ user: User }>(
-            "/api/account/register",
-            data
-         );
+         const response = await apiClient.post<User>("/api/account/register", data);
 
          return response.data;
       },
-      onSuccess: (data: { user: User }) => {
-         dispatch(setCredentials({ user: data.user }));
+      onSuccess: (data) => {
+         dispatch(setCredentials({ user: data }));
          navigate("/");
       },
       onError: (error) => {

@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useSignUp from "../hooks/useSignUp";
 import type { RegisterFormData } from "@/types/common";
+import GuestLogin from "./GuestLogin";
 
 function RegisterForm() {
    const {
@@ -105,9 +106,7 @@ function RegisterForm() {
                   {isPending ? "Please wait.." : "Submit"}
                </Button>
 
-               {/* <GuestLoginButton variant={"link"}>
-               Sign in as a guest <ArrowUpRight />{" "}
-            </GuestLoginButton> */}
+               <GuestLogin />
             </div>
          </div>
       </form>

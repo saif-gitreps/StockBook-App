@@ -5,11 +5,13 @@ import useDeletePortfolio from "@/feature/portfolio/hooks/useDeletePortfolio";
 import type { Portfolio } from "@/types/common";
 import Loader from "@/components/Loader";
 import Layout from "@/components/Layout";
+import { useNavigate } from "react-router-dom";
 
 export default function Portfolio() {
    const { data: portfolio, isLoading } = useGetPortfolio();
    const { mutate: removeStock } = useDeletePortfolio();
    const [removingSymbol, setRemovingSymbol] = useState<string | null>(null);
+   const navigate = useNavigate();
 
    const handleRemove = (symbol: string) => {
       setRemovingSymbol(symbol);
@@ -83,7 +85,8 @@ export default function Portfolio() {
                                  portfolio.map((stock: Portfolio) => (
                                     <tr
                                        key={stock.symbol}
-                                       className="hover:bg-[#08101A]/50 transition-colors"
+                                       className="hover:bg-[#08101A]/50 transition-colors cursor-pointer"
+                                       onClick={() => navigate("/stock/" + stock.symbol)}
                                     >
                                        <td className="px-6 py-4 text-sm font-medium text-cyan-400">
                                           {stock.symbol}

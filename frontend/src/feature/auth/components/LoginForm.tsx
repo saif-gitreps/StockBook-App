@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import useSignIn from "../hooks/useSignIn";
 import type { LoginFormData } from "@/types/common";
+import GuestLogin from "./GuestLogin";
 
 function LoginForm() {
    const {
@@ -79,9 +80,7 @@ function LoginForm() {
                   {isPending ? "Please wait.." : "Login"}
                </Button>
 
-               {/* <GuestLoginButton variant={"link"}>
-                  Sign in as a guest <ArrowUpRight />{" "}
-               </GuestLoginButton> */}
+               <GuestLogin />
             </div>
          </div>
       </form>

@@ -4,6 +4,7 @@ import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import Layout from "@/components/Layout";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 function StockExplorer() {
    const [searchSymbol, setSearchSymbol] = useState("");
@@ -147,24 +148,24 @@ function StockExplorer() {
             </div>
 
             <div className="flex items-center justify-between">
-               <button
+               <Button
                   onClick={() => setPageNumber(Math.max(1, pageNumber - 1))}
                   disabled={pageNumber === 1}
                   className="flex items-center gap-2 px-4 py-2 bg-[#08101A] border border-[#1F2937] rounded-lg text-gray-400 hover:text-white disabled:opacity-50"
                >
                   <ChevronLeft className="w-4 h-4" />
                   Previous
-               </button>
+               </Button>
 
                <span className="text-gray-400">Page {pageNumber}</span>
 
-               <button
+               <Button
                   onClick={() => setPageNumber(pageNumber + 1)}
-                  className="flex items-center gap-2 px-4 py-2 bg-cyan-600 text-white rounded-lg hover:bg-cyan-500"
+                  className="flex items-center gap-2 px-4 py-2 bg-cyan-800 text-white rounded-lg hover:bg-cyan-500"
                >
                   Next
                   <ChevronRight className="w-4 h-4" />
-               </button>
+               </Button>
             </div>
          </div>
       </Layout>

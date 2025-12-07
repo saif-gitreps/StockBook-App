@@ -156,5 +156,40 @@ namespace StockBook_App.Controllers
             });
             return Ok(new { message = "Logged out successfully." });
         }
+
+        [HttpPut]
+        [Authorize]
+        public IActionResult UpdateUser([FromBody] RegisterDto updateDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var currentUser = User.GetUsername();
+            var existingUser = _userManager.FindByNameAsync(currentUser).Result;
+
+            if (existingUser == null)
+            {
+                return Unauthorized();
+            }
+
+            existingUser.UserName = updateDto.UserName ?? existingUser.UserName;
+            existingUser.Email = updateDto.Email ?? existingUser.Email;
+            existingUser.PasswordHash = _userManager.PasswordHasher.HashPassword(existingUser, updateDto.Password);
+            var result = _userManager.UpdateAsync(existingUser).Result;
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok(new NewUserDto
+            {
+                Id = existingUser.Id,
+                Email = existingUser.Email,
+                UserName = existingUser.UserName,
+            });
+        }
     }
 }
