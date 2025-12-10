@@ -7,12 +7,46 @@ using StockBook_App.Interfaces;
 using StockBook_App.Models.Entities;
 using StockBook_App.Repository;
 using StockBook_App.Services;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+       RateLimitPartition.GetFixedWindowLimiter(
+           partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+           factory: partition => new FixedWindowRateLimiterOptions
+           {
+               AutoReplenishment = true,
+               PermitLimit = 30,
+               QueueLimit = 0,
+               Window = TimeSpan.FromMinutes(1)
+           }));
+
+    options.AddPolicy("Fixed", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.User.Identity?.Name ?? context.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 25,
+                QueueLimit = 0,
+                Window = TimeSpan.FromSeconds(30)
+            }));
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        await context.HttpContext.Response.WriteAsync("Too many requests. Please try again later.", cancellationToken);
+    };
+});
+
+//builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 // To avoid object cycle issues
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
@@ -61,13 +95,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+            policy.WithOrigins("http://localhost:5173", 
+                "https://localhost:5173", builder.Configuration["AllowedOrigins"])
                   .AllowAnyMethod()
                   .AllowAnyHeader()
                   .AllowCredentials();

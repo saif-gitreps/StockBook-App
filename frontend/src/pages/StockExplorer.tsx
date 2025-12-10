@@ -5,17 +5,20 @@ import Layout from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import StockSearchBar from "@/feature/stocks/components/StockSearchBar";
 import StockSearchResultTable from "@/feature/stocks/components/StockSearchResultTable";
+import useDebounce from "@/hooks/useDebounce";
 
 function StockExplorer() {
-   const [searchSymbol, setSearchSymbol] = useState("");
-   const [searchCompany, setSearchCompany] = useState("");
-   const [sortOrder, setSortOrder] = useState("desc");
-   const [pageNumber, setPageNumber] = useState(1);
-   const [pageSize] = useState(10);
+   const [searchSymbol, setSearchSymbol] = useState<string>("");
+   const [searchCompany, setSearchCompany] = useState<string>("");
+   const debouncedSearchSymbol = useDebounce(searchSymbol, 500);
+   const debouncedSearchCompany = useDebounce(searchCompany, 500);
+   const [sortOrder, setSortOrder] = useState<string>("desc");
+   const [pageNumber, setPageNumber] = useState<number>(1);
+   const [pageSize] = useState<number>(10);
 
    const { data: stocks, isLoading } = useGetStocks({
-      symbol: searchSymbol || undefined,
-      companyName: searchCompany || undefined,
+      symbol: debouncedSearchSymbol || undefined,
+      companyName: debouncedSearchCompany || undefined,
       sortBy: "Symbol",
       sortOrder,
       pageNumber,
